@@ -27,6 +27,9 @@ import resources
 # Import the code for the dialog
 from gps_allocator_dialog import GPSAllocatorDialog
 import os.path
+import os
+from qgis.core import *
+import qgis.utils
 
 
 class GPSAllocator:
@@ -182,12 +185,67 @@ class GPSAllocator:
 
     def run(self):
         """Run method that performs all the real work"""
+        # this code will populate the combo box with all
+
+        # vector layer from the Table of Content
+
+        self.dlg.layerListCombo.clear()
+        self.dlg.filePath.clear()
+
+        layers = self.iface.legendInterface().layers()
+        layer_list = []
+        for layer in layers:
+            layerType = layer.type()
+            if layerType == QgsMapLayer.VectorLayer:
+                layer_list.append(layer.name())
+        self.dlg.layerListCombo.addItems(layer_list)
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            pass
+            # delete selected feature from layer chosen by user
+
+            selectedLayerIndex = self.dlg.layerListCombo.currentIndex()
+            #filePathFilled = self.dlg.filePath.currentIndex()
+            filePathFilled = self.dlg.filePath.toPlainText()
+            selectedLayer = layers[selectedLayerIndex]
+            # selFeatures = selectedLayer.selectedFeatures()
+            # ids = [f.id() for f in selFeatures]
+            # selectedLayer.startEditing()
+            # for fid in ids:
+            #     selectedLayer.deleteFeature(fid)
+            #     selectedLayer.commitChanges()
+            #
+            # mc = self.iface.mapCanvas()
+            # mc.refresh()
+
+            gpxFiles = []
+            for filename in os.listdir(filePathFilled):
+                if filename.endswith(".gpx"):
+                    gpxFiles.append(filename)
+            print(gpxFiles)
+
+            # layer = qgis.utils.iface.addVectorLayer(filePathFilled, "GPS Layer", "ogr")
+            # if not layer:
+            #     print
+            #     "Layer failed to load!"
+
+            # pick out the parts of the gpx file we want
+            #loadGPXdata()
+
+            #determine their spatial extent
+
+            # calculate the time interval of the GPS data
+
+            # perform overpass query
+
+            # Separate overpass results by intersection and write them to a Spatialite table
+
+            # Compute time-on-shard and output line datasets and results based on user input summary stats
+
+def loadGPXdata():
+    uri = "path/to/gpx/file.gpx?type=track"
+    vlayer = QgsVectorLayer(uri, "layer name you like", "gpx")
